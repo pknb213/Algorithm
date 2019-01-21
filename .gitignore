@@ -1,0 +1,8 @@
+## Flask Git Ignore File ##
+
+*.log
+*.bak
+*.pyc
+
+.FlaskServer/__pycache__/
+.idea/
