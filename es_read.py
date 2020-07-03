@@ -106,7 +106,7 @@ def add_field(j, _arr):
         elif device_id == '22860':
             if "20200412183600" <= req_time < "20200412190800":
                 hits_arr[j]['_source']["message"] += "|error_type=1"
-            elif "20200408000000" <= req_time < "20200415000000":\
+            elif "20200408000000" <= req_time < "20200415000000":
                 hits_arr[j]['_source']["message"] += "|error_type=2"
             else:
                 hits_arr[j]['_source']["message"] += "|error_type=0"
