@@ -169,7 +169,6 @@ scroller = scan(client=es, query=body, index=index_name)
 # # df = pd.DataFrame(scroller)
 # print(df)
 
-""" 하아 씨발 """
 count = 0
 doc = 1
 final_arr = []
