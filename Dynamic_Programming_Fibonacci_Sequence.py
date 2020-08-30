@@ -34,5 +34,4 @@ start_time2 = time.time()
 print("Fibonacci DynamicP (%d) : %.0f | %d번 수행" % (num, dynamicP(num), j))
 end_time2 = time.time()
 print("수행 시간 : %.6f 초" % (end_time2 - start_time2))
-print(i,j)
 
