@@ -31,31 +31,47 @@ pop 장르는 3,100회 재생되었으며, pop 노래는 다음과 같습니다.
 따라서 pop 장르의 [4, 1]번 노래를 먼저, classic 장르의 [3, 0]번 노래를 그다음에 수록합니다.
 """
 case = [
-    ["classic", "pop", "classic", "classic", "pop"],
-    [500, 600, 150, 800, 2500]
+    ["classic", "pop", "classic", "classic", "pop", "classic", "pop"],
+    [500, 600, 150, 800, 2500, 500, 2500]
+]
+case2 = [
+    ["classic"],
+    [500]
 ]
 
 
 def solution(genres, plays):
     answer = []
     from collections import Counter
+    from operator import itemgetter
     dic = {}
     cnt = Counter()
     for i in range(len(genres)):
         dic[i] = tuple([genres[i], plays[i]])
         cnt += Counter({genres[i]: plays[i]})
     while len(cnt):
-        print(cnt)
+        # print(cnt)
         key = max(cnt, key=lambda k: cnt[k])
-        print(key)
-        a = [{k: v2} for k, (v1, v2) in dic.items() if v1 == key]
-        print(a, type(a))
-        print()
+        # print(key)
+        # a = [{k: v2} for k, (v1, v2) in dic.items() if v1 == key]
+        b = {}
+        for k, (v1, v2) in dic.items():
+            if v1 == key:
+                b.update({k: v2})
+        print(b)
+        c = 2
+        while c:
+            if len(b) == 0:
+                break
+            g = max(b.items(), key=itemgetter(1))[0]
+            print(g)
+            answer.append(g)
+            b.pop(g)
+            c -= 1
         cnt.pop(key)
-
     return answer
 
 
 print(case)
-print(solution(case[0], case[1]))
+print(solution(case2[0], case2[1]))
 
