@@ -29,7 +29,7 @@ def solution(m, n, puddles):
     answer = 0
     print(m, n, puddles)
     mem = {1: [(1, 1)]}
-    
+
     return answer
 
 
