@@ -11,41 +11,36 @@ input	output
 ({[}])	false
 [{(([{[]}]))}]	true
 """
-import sys, time, datetime
+import sys
+from datetime import timedelta
+from timeit import default_timer as timer
+from collections import deque
 sys.setrecursionlimit(8000)
+
+
 def Soultion(_str):
     # Todo : 아마 이 방법은 효율성에서 부적합할 수 있다. String 인덱스만 이동해서 해야할지도?
-    _str = list(_str)
+    _str = deque(_str)
     st = []
     while _str:
-        _s = _str.pop(0)
-        if _s in [']', '}', ')']:
-            if _s == ']' and st.pop() == '[':
-                pass
-            elif _s == '}' and st.pop() == '{':
-                pass
-            elif _s == ')' and st.pop() == '(':
+        _s = _str.popleft()
+        if _s in [']', '}', ')'] and len(st):
+            if (_s == ']' and st.pop() == '[') or (_s == '}' and st.pop() == '{') or (_s == ')' and st.pop() == '('):
                 pass
             else:
                 return False
         else:
             st.append(_s)
-            print(st, " - ", _str)
+        # print(st, " - ", _str)
     if not len(st):
         return True
     return False
 
-def Soultion2(_str):
-    return False
-
 
 Syntext = "[{(([{[]}]))}]"
-st = time.time()
-print(">>", Soultion(Syntext))
-print(time.time() - st)
-st = time.time()
-print(">>", Soultion2(Syntext))
-print(time.time() - st)
+st = timer()
+print("1 >>", Soultion(Syntext))
+print(timedelta(seconds=timer() - st))
 """
 2. Raccoon (Required)
 너구리 한 쌍은 한 달 후에 다른 새끼 너구리 한 쌍을 낳습니다. 
@@ -77,21 +72,17 @@ def Soultion(_int):
     # F4 => F3 + F2 => (F2 + F1) + (F1 + F0)  => (F1 + F0) + (F1) + (F1) + (F0) = 4 + 2 + 4 + 4 + 2 = 16
     @Deco
     def pibonachi(i):
-        # print(i, end=" ")
-        if i == 0:
-            return 2
-        elif i == 1:
-            return 4
-        else:
-            return pibonachi(i-1) + pibonachi(i-2)
+        res = 2 if i == 0 else 4 if i == 1 else pibonachi(i-1) + pibonachi(i-2)
+        # print(i, ":", res)
+        return res
 
     return pibonachi(_int)
 
 
-Month = 120
-st = time.time()
-print("\n>> ", Soultion(Month))
-print(time.time() - st)
+Month = 8
+st = timer()
+print("\n2 >> ", Soultion(Month))
+print(timedelta(seconds=timer() - st), "\n")
 """
 3. 집뷰가 필요한 이유 (Optional)
 오프라인 매장이 문을 닫아서 상담원들은 직접 고객을 만나러 각지를 방문해야 하는 상황이 되었습니다. 
@@ -108,8 +99,8 @@ print(time.time() - st)
 def Soultion(_graph):
     from itertools import permutations
     cases = list(permutations([i for i in range(len(_graph))], len(_graph)))
-    print(_graph)
-    print(cases)
+    # print(_graph)
+    # print(cases)
     costs = {}
     # todo : 반대로 오는 경우는 값이 같으니 제거하는 코드가 있으면 효율성 업
     for c in cases:
@@ -123,14 +114,14 @@ def Soultion(_graph):
         else:
             costs[st] = cost
         # print(cost)
-    print(costs)
+    # print(costs)
     return min(costs.values())
 
 
 HomeList = [[0, 326, 503, 290], [326, 0, 225, 395], [503, 225, 0, 620], [290, 395, 620, 0]]
-st = time.time()
-print("\n>>", Soultion(HomeList))
-print(time.time() - st)
+st = timer()
+print("\n3 >>", Soultion(HomeList))
+print(timedelta(seconds=timer() - st))
 
 
 
