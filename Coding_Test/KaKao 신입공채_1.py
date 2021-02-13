@@ -100,12 +100,74 @@ no	                new_id	                            result
 7단계 변화 없습니다.
 
 """
+from datetime import timedelta
+from timeit import default_timer as timer
 
 def solution(new_id):
-    answer = ''
-    print(new_id)
+    # new_id = ".Aa\tBb0 12..3+-_!@# ."
+    new_id = new_id.lower()
 
-    return answer
+    import re
+    p = re.compile('\w|[-_.]')
+    m = p.findall(new_id)
+    new_id = "".join(m)
+
+    new_id = new_id.replace('..', '.')
+
+    new_id = new_id.strip('.')
+
+    if not len(new_id):
+        new_id = "a"
+
+    new_id = new_id[:15]
+    new_id = new_id.strip('.')
+
+    if len(new_id) < 3:
+        arr = [new_id]
+        while len(new_id) < 3:
+            arr.append(new_id[-1])
+            new_id = "".join(arr)
+        new_id = new_id[:3]
+
+    # print(new_id)
+
+    return new_id
 
 
-solution("...!@BaT#*..y.abcdefghijklm")
+def soltion2(new_id):
+    import string
+    id1 = new_id.lower()
+
+    step2_filter = string.digits + string.ascii_lowercase + '-_.'
+    id2 = ''
+    for c in id1:
+        if c in step2_filter: id2 += c
+
+    id3 = ''
+    for c in id2:
+        if c != '.':
+            id3 += c
+        else:
+            if id3 and id3[-1] == '.': continue
+            id3 += c
+
+    id4 = id3.strip('.')
+
+    id5 = id4[:]
+    if not id5: id5 = 'a'
+
+    id6 = id5[:15]
+    if id6[-1] == '.': id6 = id6[:-1]
+
+    id7 = id6[:]
+    while len(id7) < 3: id7 = id7 + id7[-1]
+    return id7
+
+
+st = timer()
+print("\n", solution("...!@BaT#*..y.abcdefghijklm"))
+print(timedelta(seconds=timer() - st))
+
+st = timer()
+print("\n", soltion2("...!@BaT#*..y.abcdefghijklm"))
+print(timedelta(seconds=timer() - st))
