@@ -102,25 +102,29 @@ no	                new_id	                            result
 """
 from datetime import timedelta
 from timeit import default_timer as timer
+import string
+import re
 
-def solution(new_id):
+def solution(_new_id):
+    st = timer()
     # new_id = ".Aa\tBb0 12..3+-_!@# ."
-    new_id = new_id.lower()
+    new_id = _new_id.lower()
+    # print("1 >", timedelta(seconds=timer() - st), new_id)
+    new_id = "".join(re.findall(r'\w|[-_.]', new_id))
+    # print("2 >", timedelta(seconds=timer() - st), new_id)
 
-    import re
-    p = re.compile('\w|[-_.]')
-    m = p.findall(new_id)
-    new_id = "".join(m)
-
-    new_id = new_id.replace('..', '.')
+    new_id = ".".join(re.findall('[^..]+', new_id))
+    # print("3 >", timedelta(seconds=timer() - st), new_id)
 
     new_id = new_id.strip('.')
+    # print("4 >", timedelta(seconds=timer() - st), new_id)
 
     if not len(new_id):
         new_id = "a"
+    # print("5 >", timedelta(seconds=timer() - st), new_id)
 
-    new_id = new_id[:15]
-    new_id = new_id.strip('.')
+    new_id = new_id[:15].strip('.')
+    # print("6 >", timedelta(seconds=timer() - st), new_id)
 
     if len(new_id) < 3:
         arr = [new_id]
@@ -128,20 +132,22 @@ def solution(new_id):
             arr.append(new_id[-1])
             new_id = "".join(arr)
         new_id = new_id[:3]
+    # print("7 >", timedelta(seconds=timer() - st), new_id)
 
     # print(new_id)
-
     return new_id
 
 
 def soltion2(new_id):
-    import string
+    st = timer()
     id1 = new_id.lower()
+    # print("1 >", timedelta(seconds=timer() - st))
 
     step2_filter = string.digits + string.ascii_lowercase + '-_.'
     id2 = ''
     for c in id1:
         if c in step2_filter: id2 += c
+    # print("2 >", timedelta(seconds=timer() - st))
 
     id3 = ''
     for c in id2:
@@ -150,24 +156,108 @@ def soltion2(new_id):
         else:
             if id3 and id3[-1] == '.': continue
             id3 += c
+    # print("3 >", timedelta(seconds=timer() - st))
 
     id4 = id3.strip('.')
+    # print("4 >", timedelta(seconds=timer() - st))
 
     id5 = id4[:]
     if not id5: id5 = 'a'
+    # print("5 >", timedelta(seconds=timer() - st))
 
     id6 = id5[:15]
     if id6[-1] == '.': id6 = id6[:-1]
+    # print("6 >", timedelta(seconds=timer() - st))
 
     id7 = id6[:]
     while len(id7) < 3: id7 = id7 + id7[-1]
+    # print("7 >", timedelta(seconds=timer() - st))
     return id7
 
 
+def solution3(_new_id):
+    # new_id = ".Aa\tBb0 12..3+-_!@# ."
+    str1 = _new_id.lower()
+    str2 = "".join(re.findall('\w|[-_.]', str1))
+    str3 = ".".join(re.findall('[^..]+', str2))
+    str4 = str3.strip('.')
+    str5 = str4
+    if not len(str5):
+        str5 = "a"
+    str6 = str5[:15].strip('.')
+    str7 = str6
+    if len(str7) < 3:
+        arr = [str7]
+        while len(str7) < 3:
+            arr.append(str7[-1])
+            str7 = "".join(arr)
+        return str7[:3]
+    return str7
+
+
+def solution4(_new_id):
+    # new_id = ".Aa\tBb0 12..3+-_!@# ."
+    str1 = _new_id.lower()
+    str2 = "".join(re.findall('\w|[-_.]', str1))
+    # Test Case 4, 14, 16, 17, 20, 21, 25번 에러 모두 여기서 발생
+    # 원인 : 한번만 replace 하기 때문에 .... 경우 .. 다시 점 두개가 발생하는데 냅둬서 에러
+    # 방안 : 루프를 돌려서 계속 ..일 때마다 .으로 줄여나가기
+    # 해결 : 정규표현식으로 ..* 는 일괄 .으로 수정 => 성공
+    str3 = ''
+    for c in str2:
+        if c != '.':
+            str3 += c
+        else:
+            if str3 and str3[-1] == '.': continue
+            str3 += c
+    str4 = str3.strip('.')
+    str5 = str4
+    if not len(str5):
+        str5 = "a"
+    str6 = str5[:15].strip('.')
+    str7 = str6
+    if len(str7) < 3:
+        arr = [str7]
+        while len(str7) < 3:
+            arr.append(str7[-1])
+            str7 = "".join(arr)
+        return str7[:3]
+    return str7
+
+
+def solution5(new_id):
+    st = new_id
+    st = st.lower()
+    st = re.sub('[^a-z0-9\-_.]', '', st)
+    st = re.sub('\.+', '.', st)
+    st = re.sub('^[.]|[.]$', '', st)
+    st = 'a' if len(st) == 0 else st[:15]
+    st = re.sub('^[.]|[.]$', '', st)
+    st = st if len(st) > 2 else st + "".join([st[-1] for i in range(3-len(st))])
+    return st
+
+
 st = timer()
-print("\n", solution("...!@BaT#*..y.abcdefghijklm"))
+print("\n", solution("...!@BaT#...*..y.abcdefghijklm"))
+# Test Cases : 4, 14, 16, 17, 20, 21, 25
 print(timedelta(seconds=timer() - st))
 
 st = timer()
-print("\n", soltion2("...!@BaT#*..y.abcdefghijklm"))
+print("\n", soltion2("...!@BaT#...*..y.abcdefghijklm"))
+# Test Cases : Success
+print(timedelta(seconds=timer() - st))
+
+st = timer()
+print("\n", solution3("...!@BaT#...*..y.abcdefghijklm"))
+# Test Cases : 4, 14, 16, 17, 20, 21, 25
+print(timedelta(seconds=timer() - st))
+
+st = timer()
+print("\n", solution4("...!@BaT#...*..y.abcdefghijklm"))
+# Test Cases :
+print(timedelta(seconds=timer() - st))
+
+st = timer()
+print("\n", solution5("...!@BaT#...*..y.abcdefghijklm"))
+# Test Cases :
 print(timedelta(seconds=timer() - st))
