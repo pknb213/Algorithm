@@ -83,7 +83,7 @@ def solution2(orders, course):
 def solution(orders, course):
     print(">", orders, course)
     from collections import Counter
-    from itertools import combinations
+    from itertools import combinations, permutations
     answer = []
     cnt = Counter()
     for a in orders:
@@ -91,15 +91,24 @@ def solution(orders, course):
             li = list(combinations(a, b))
             if len(li):
                 for i in li:
-                    # print(i, type(i), "".join(i))
-                    cnt += {"".join(i): 1}
+                    print(i, type(i), "".join(i))
+                    cnt += {"".join(sorted(i)): 1}
+    print(cnt)
+    for i in course:
+        d = {}
+        for k, v in cnt.items():
+            if len(k) == i and v > 1:
+                d[k] = v
+        if len(d):
+            answer.extend([k for k, v in d.items() if max(d.values()) == v])
 
-    print(dict(cnt))
-
-    return 1
+    # a = [(cnt[v], v) for i, v in enumerate(cnt) if len(v) == 2]
+    # print(a, type(a))
+    answer.sort()
+    return answer
 
 
 st = timer()
-print(solution(["ABCDE", "AB", "CD", "ADE", "XYZ", "XYZ", "ACD"], [2,3,5]))
+print(solution(["XYZ", "XWY", "WXA"], [2,3,4]))
 print(timedelta(seconds=timer() - st))
 

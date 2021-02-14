@@ -14,12 +14,11 @@ input	output
 import sys
 from datetime import timedelta
 from timeit import default_timer as timer
-from collections import deque
 sys.setrecursionlimit(8000)
 
 
 def Soultion(_str):
-    # Todo : 아마 이 방법은 효율성에서 부적합할 수 있다. String 인덱스만 이동해서 해야할지도?
+    from collections import deque
     _str = deque(_str)
     st = []
     while _str:
@@ -57,7 +56,7 @@ input(n달후)	output(마리 수)
 4	16
 """
 def Soultion(_int):
-    # F0 = 2, F1 = 4, Fn+2 = Fn+1 + Fn 피보나치
+    # F0 = 2, F1 = 4, Fn+2 = Fn + Fn+1
     # Todo : DP로 결과 값을 가지고 있으면 더욱 메모리 효율성이 좋아짐
     class Deco:
         def __init__(self, func):
@@ -68,14 +67,12 @@ def Soultion(_int):
             if args not in self.cache:
                 self.cache[args] = self.function(*args)
             return self.cache[args]
-    # 2, 4, 6, 10, 16
-    # F4 => F3 + F2 => (F2 + F1) + (F1 + F0)  => (F1 + F0) + (F1) + (F1) + (F0) = 4 + 2 + 4 + 4 + 2 = 16
+
     @Deco
     def pibonachi(i):
         res = 2 if i == 0 else 4 if i == 1 else pibonachi(i-1) + pibonachi(i-2)
         # print(i, ":", res)
         return res
-
     return pibonachi(_int)
 
 
@@ -99,21 +96,18 @@ print(timedelta(seconds=timer() - st), "\n")
 def Soultion(_graph):
     from itertools import permutations
     cases = list(permutations([i for i in range(len(_graph))], len(_graph)))
-    # print(_graph)
-    # print(cases)
     costs = {}
-    # todo : 반대로 오는 경우는 값이 같으니 제거하는 코드가 있으면 효율성 업
     for c in cases:
-        st = c[0]
+        start = c[0]
         cost = 0
         for i in range(len(c) - 1):
             cost += _graph[c[i]][c[i+1]]
-        if st in costs:
-            if costs[st] > cost:
-                costs[st] = cost
+        if start in costs:
+            if costs[start] > cost:
+                costs[start] = cost
         else:
-            costs[st] = cost
-        # print(cost)
+            costs[start] = cost
+    #     print(cost)
     # print(costs)
     return min(costs.values())
 
