@@ -43,8 +43,8 @@ def get_html(_url, _id):
     driver.get(_url + _id)
     time.sleep(3)
     if type(_url) is str and type(_id) is str:
-        # raw_html = requests.get(_url + _id)
-        # html = BeautifulSoup(raw_html.content, 'html.parser')
+        raw_html = requests.get(_url + _id)
+        html = BeautifulSoup(raw_html.content, 'html.parser')
         raw_html = driver.page_source
         html = BeautifulSoup(raw_html, 'html.parser')
         li_size = len(html.find_all("li", attrs={'class': 'thumb_nail'}))
