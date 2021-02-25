@@ -47,8 +47,12 @@ def extract_product():
                               options=options)
     driver.implicitly_wait(3)
     driver.get("https://m.gmarket.co.kr")
-    time.sleep(3)
+    time.sleep(1)
     # todo : Please Parsing Here.
+    raw_html = driver.page_source
+    html = BeautifulSoup(raw_html, 'html.parser')
+    li_size = len(html.find_all("div", attrs={'class': 'component'}))
+    print(">>", li_size)
     driver.quit()
     return 1
 
@@ -73,6 +77,7 @@ if __name__ == '__main__':
     pp = pprint.PrettyPrinter(indent=4)
     num_cores = cpu_count()
     print("Cores Num : ", num_cores)
+    extract_product()
     res = extract_xpath_from_product()
     print(res, type(res), len(res))
     print(json.loads(res), type(json.loads(res)))
