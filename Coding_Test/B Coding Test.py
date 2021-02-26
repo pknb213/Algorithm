@@ -4,7 +4,7 @@ from selenium.webdriver.chrome.options import Options
 from multiprocessing import Pool, cpu_count
 from timeit import default_timer as timer
 from datetime import timedelta
-import requests, pprint, datetime, json, time
+import requests, pprint, datetime, json, time,unittest
 
 """
     selenium의 webdriver를 사용하기 위해선 크롬 버전에 맞는 chromedriver.exe가 필요하다
@@ -36,25 +36,90 @@ https://www.gsshop.com/index.gs
 - 따라서, 고정된 xpath 를 사용하는 것이 아니라 상품의 URL과, 상품명, 가격, 이미지
 정보를 입력으로 받으면 동적으로 xpath 정보를 추출하고, 추출된 xpath를 이용해서
 데이터를 수집해야 한다.
-
 """
 
 
-def extract_product():
-    options = Options()
-    options.headless = True
-    driver = webdriver.Chrome(executable_path="./chromedriver.exe",
-                              options=options)
-    driver.implicitly_wait(3)
-    driver.get("https://m.gmarket.co.kr")
-    time.sleep(1)
-    # todo : Please Parsing Here.
-    raw_html = driver.page_source
-    html = BeautifulSoup(raw_html, 'html.parser')
-    li_size = len(html.find_all("div", attrs={'class': 'component'}))
-    print(">>", li_size)
-    driver.quit()
-    return 1
+class Crawling_Test(unittest.TestCase):
+    def setUp(self):
+        self.driver = webdriver.Chrome()
+
+    def extract_product(self):
+        total = 0
+        options = Options()
+        options.headless = True
+        driver = webdriver.Chrome(executable_path="./chromedriver.exe",
+                                  options=options)
+        driver.implicitly_wait(2)
+        # driver.get("https://m.gmarket.co.kr")
+        # todo : Please Parsing Here.
+        # raw_html = driver.page_source
+        # html = BeautifulSoup(raw_html, 'html.parser')
+        # li_size = len(html.find_all("div", attrs={'class': 'component'}))
+        # print(">>", li_size)
+        # total += li_size
+        # time.sleep(0.1)
+        # driver.get("https://m.gmarket.co.kr/n/superdeal")
+        # raw_html = driver.page_source
+        # html = BeautifulSoup(raw_html, 'html.parser')
+        # li_size = len(html.find_all("div", attrs={'class': 'component'}))
+        # print(">>", li_size)
+        # total += li_size
+        # time.sleep(0.1)
+        # driver.get("https://m.gmarket.co.kr/n/superdeal?categoryCode=400000174&categoryLevel=1")
+        # raw_html = driver.page_source
+        # html = BeautifulSoup(raw_html, 'html.parser')
+        # li_size = len(html.find_all("div", attrs={'class': 'component'}))
+        # print(">>", li_size)
+        # total += li_size
+        # time.sleep(0.1)
+        # driver.get("https://m.gmarket.co.kr/n/superdeal?categoryCode=400000135&categoryLevel=1")
+        # raw_html = driver.page_source
+        # html = BeautifulSoup(raw_html, 'html.parser')
+        # li_size = len(html.find_all("div", attrs={'class': 'component'}))
+        # print(">>", li_size)
+        # total += li_size
+        # time.sleep(0.1)
+        # driver.get("https://m.gmarket.co.kr/n/superdeal?categoryCode=400000136&categoryLevel=1")
+        # raw_html = driver.page_source
+        # html = BeautifulSoup(raw_html, 'html.parser')
+        # li_size = len(html.find_all("div", attrs={'class': 'component'}))
+        # print(">>", li_size)
+        # total += li_size
+        # time.sleep(0.1)
+        # driver.get("https://m.gmarket.co.kr/n/superdeal?categoryCode=400000137&categoryLevel=1")
+        # raw_html = driver.page_source
+        # html = BeautifulSoup(raw_html, 'html.parser')
+        # li_size = len(html.find_all("div", attrs={'class': 'component'}))
+        # print(">>", li_size)
+        # total += li_size
+        # time.sleep(0.1)
+        driver.get("https://m.gmarket.co.kr/n/superdeal?categoryCode=400000138&categoryLevel=1")
+        raw_html = driver.page_source
+        # Selenium
+        # "//strong[@class='text__price']/span[@class='text_price']/div[@class='box_itemcard--price']"
+        # price_list = driver.find_elements_by_xpath('/html/body/div/div[2]/div[2]/div[2]/div/div[*]/div/div/div[2]/a/div[1]/span[1]/strong')
+        '/html/body/div/div[2]/div[2]/div[2]/div/div[2]/div/div/div[2]/a/div[1]/span[1]/strong'  # 가격
+        '/html/body/div/div[2]/div[2]/div[2]/div/div[4]/div/div/div[2]/a/div[1]/span[1]/strong'
+        # for i in price_list:
+        #     print(i.text)
+        a = driver.find_element_by_xpath("/html/body/div/div[2]/div[2]/div[2]/div")
+        print(a.__dir__())
+        print(a)
+        # print(a.tag_name, a.text)
+
+        # Using BS4
+        html = BeautifulSoup(raw_html, 'html.parser')
+        data = html.find_all("div", attrs={'class': 'component'})
+        li_size = len(data)
+        # print(data)
+        print(">>", li_size)
+        total += li_size
+        driver.quit()
+
+        return total
+
+    def tearDown(self):
+        self.driver.close()
 
 
 def extract_xpath_from_product():
@@ -73,14 +138,15 @@ def extract_xpath_from_product():
 
 
 if __name__ == '__main__':
-    st = timer()
-    pp = pprint.PrettyPrinter(indent=4)
-    num_cores = cpu_count()
-    print("Cores Num : ", num_cores)
-    extract_product()
-    res = extract_xpath_from_product()
-    print(res, type(res), len(res))
-    print(json.loads(res), type(json.loads(res)))
-    print("실행 시간", timedelta(seconds=timer() - st))
+    unittest.main()
+    # st = timer()
+    # pp = pprint.PrettyPrinter(indent=4)
+    # num_cores = cpu_count()
+    # print("Cores Num : ", num_cores)
+    # print("Total :", extract_product())
+    # # res = extract_xpath_from_product()
+    # # print(res, type(res), len(res))
+    # # print(json.loads(res), type(json.loads(res)))
+    # print("실행 시간", timedelta(seconds=timer() - st))
 
 
