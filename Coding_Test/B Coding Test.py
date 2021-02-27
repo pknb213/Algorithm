@@ -43,7 +43,9 @@ class Crawling_Test(unittest.TestCase):
     def setUp(self):
         self.driver = webdriver.Chrome()
 
-    def extract_product(self):
+    @staticmethod
+    def extract_product():
+        st = timer()
         total = 0
         options = Options()
         options.headless = True
@@ -95,18 +97,28 @@ class Crawling_Test(unittest.TestCase):
         # time.sleep(0.1)
         driver.get("https://m.gmarket.co.kr/n/superdeal?categoryCode=400000138&categoryLevel=1")
         raw_html = driver.page_source
+        print("-->", timedelta(seconds=timer() - st))
         # Selenium
-        # "//strong[@class='text__price']/span[@class='text_price']/div[@class='box_itemcard--price']"
-        # price_list = driver.find_elements_by_xpath('/html/body/div/div[2]/div[2]/div[2]/div/div[*]/div/div/div[2]/a/div[1]/span[1]/strong')
-        '/html/body/div/div[2]/div[2]/div[2]/div/div[2]/div/div/div[2]/a/div[1]/span[1]/strong'  # 가격
-        '/html/body/div/div[2]/div[2]/div[2]/div/div[4]/div/div/div[2]/a/div[1]/span[1]/strong'
-        # for i in price_list:
-        #     print(i.text)
-        a = driver.find_element_by_xpath("/html/body/div/div[2]/div[2]/div[2]/div")
-        print(a.__dir__())
-        print(a)
-        # print(a.tag_name, a.text)
+        b = driver.find_elements_by_xpath('//*[@class="text__price"]')
+        c = driver.find_elements_by_xpath('//*[@class="text__title"]')
+        d = driver.find_elements_by_xpath('//*[@class="box-product__img-product"]/img') # 이미지는 a.screenshot("./a.jpg")) 와 같이
+        # for a in b:
+        #     print(a.text)
+        print(list(map(lambda x: x.text, b)))
+        import cv2, base64
+        cv = cv2.imread("./test.png")
+        bcv = cv2.imencode('.PNG', cv)[1].tobytes()
+        print(bcv, type(bcv))
 
+        with open('test.png', "rb") as f:
+            print("\n", base64.b64encode(f.read()), type(base64.b64encode(f.read())))
+
+        with open('test.png', "rb") as f:
+            print("\n", bytearray(f.read())[0], type(bytearray(f.read())[0]))
+        # for i in range(0, len(b)):
+        #     print(list(zip(b[i].text, c[i].text)))
+        print("-->", timedelta(seconds=timer() - st))
+#
         # Using BS4
         html = BeautifulSoup(raw_html, 'html.parser')
         data = html.find_all("div", attrs={'class': 'component'})
@@ -114,6 +126,7 @@ class Crawling_Test(unittest.TestCase):
         # print(data)
         print(">>", li_size)
         total += li_size
+        print("-->", timedelta(seconds=timer() - st))
         driver.quit()
 
         return total
@@ -138,15 +151,15 @@ def extract_xpath_from_product():
 
 
 if __name__ == '__main__':
-    unittest.main()
-    # st = timer()
-    # pp = pprint.PrettyPrinter(indent=4)
-    # num_cores = cpu_count()
-    # print("Cores Num : ", num_cores)
-    # print("Total :", extract_product())
-    # # res = extract_xpath_from_product()
-    # # print(res, type(res), len(res))
-    # # print(json.loads(res), type(json.loads(res)))
-    # print("실행 시간", timedelta(seconds=timer() - st))
+    # unittest.main()
+    st = timer()
+    pp = pprint.PrettyPrinter(indent=4)
+    num_cores = cpu_count()
+    print("Cores Num : ", num_cores)
+    print("Total :", Crawling_Test.extract_product())
+    # res = extract_xpath_from_product()
+    # print(res, type(res), len(res))
+    # print(json.loads(res), type(json.loads(res)))
+    print("실행 시간", timedelta(seconds=timer() - st))
 
 
