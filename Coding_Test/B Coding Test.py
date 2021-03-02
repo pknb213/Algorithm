@@ -1,10 +1,12 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import StaleElementReferenceException
 from bs4 import BeautifulSoup
 from multiprocessing import Pool, cpu_count
 from timeit import default_timer as timer
 from datetime import timedelta
 import requests, pprint, datetime, json, time
+import asyncio
 
 """
 https://m.gmarket.co.kr/
@@ -36,6 +38,28 @@ https://www.gsshop.com/index.gs
 """
 # Todo : MongoDB 사용, 테이블로 관계형 스키마 사용 ex) 쇼핑몰ID - Product
 
+"""
+https://m.gmarket.co.kr/
+# 메인화면 후 카테고리 -> 변경 필요
+https://m.gmarket.co.kr/n/superdeal
+https://m.gmarket.co.kr/n/superdeal?categoryCode=400000174&categoryLevel=1
+url : //div[@class="box__itemcard-superdeal--inner"]//div[@class="box__itemcard-superdeal--img"]//*[@class="box__itemcard-superdeal--link"]
+img : //*[@class="box-product__img-product"]/img'
+title : //*[@class="text__title"]
+price : //*[@class="text__price"] 
+
+https://www.gsshop.com/index.gs
+# 영상/음향 가전 페이지 1 ~ 60
+https://www.gsshop.com/shop/sect/sectL.gs?sectid=1378798&lseq=414301-10&gsid=gnb-AU414301-AU414301-10
+https://www.gsshop.com/shop/sect/sectL.gs?sectid=1378798&lseq=414301-10&gsid=gnb-AU414301-AU414301-10#0_popular_2 ... 60
+url : //section[@class="prd-list type-4items"]/ul/li/a[@class="prd-item"] href
+img : //section[@class="prd-list type-4items"]/ul/li/a[@class="prd-item"]/div[@class="prd-img"]/img src
+title : //section[@class="prd-list type-4items"]/ul/li/a[@class="prd-item"]/div[@class="prd-name"]/dl/dt/span
+price : //section[@class="prd-list type-4items"]/ul/li/a[@class="prd-item"]/div[@class="price-info"]/span[@class="price"]/span[@class="set-price"]/strong 
+"""
+# Todo : 큰 Div를 가져오고 하위 태그 루프 돌리면서 가져오게 하는게 효율이 좋을거 같은데
+# Todo : //div[text() = "일치하는 Text"]     //div[contains(text(), "포함하는 Text")]
+
 
 def convert_image_to_binary():
     # image to Binary Test
@@ -66,14 +90,14 @@ def make_dynamic_xpath():
     title = '[애플망고]딥브이원피스'
     price = '8,900'
     img = 'http://image.gsshop.com/image/37/21/37216130_L1.jpg'
-    url = 'http://mitem.gmarket.co.kr/Item?goodscode=1307494915'
-    title = '2080 키즈 어린이치약 그린애플 100g 9개'
-    price = '일시품절'
-    img = 'http://gdimg.gmarket.co.kr/1307494915/still/400?ver=1602832552'
+    url = 'https://m.gmarket.co.kr/n/superdeal'
+    title = '[쇼케이스]G마켓 단독 신발/의류+사은품 '
+    price = '39,000'
+    img = '//image.gmarket.co.kr/hanbando/202102/573640b1-e25f-4c73-8221-4b1aa82260ba.jpg'
     driver.get(url)
 
     import itertools
-    # import re
+    import re
 
     def xpath_soup(element):
         """
@@ -125,6 +149,152 @@ def extract_product():
     options.headless = True
     driver = webdriver.Chrome(executable_path="./chromedriver.exe",
                               options=options)
+    driver.implicitly_wait(5)
+    # driver.get("https://m.gmarket.co.kr")
+    # todo : Please Parsing Here.
+    # raw_html = driver.page_source
+    # html = BeautifulSoup(raw_html, 'html.parser')
+    # li_size = len(html.find_all("div", attrs={'class': 'component'}))
+    # print(">>", li_size)
+    # total += li_size
+    # time.sleep(0.1)
+    # driver.get("https://m.gmarket.co.kr/n/superdeal")
+    # raw_html = driver.page_source
+    # html = BeautifulSoup(raw_html, 'html.parser')
+    # li_size = len(html.find_all("div", attrs={'class': 'component'}))
+    # print(">>", li_size)
+    # total += li_size
+    # time.sleep(0.1)
+    # driver.get("https://m.gmarket.co.kr/n/superdeal?categoryCode=400000174&categoryLevel=1")
+    # raw_html = driver.page_source
+    # html = BeautifulSoup(raw_html, 'html.parser')
+    # li_size = len(html.find_all("div", attrs={'class': 'component'}))
+    # print(">>", li_size)
+    # total += li_size
+    # time.sleep(0.1)
+    # driver.get("https://m.gmarket.co.kr/n/superdeal?categoryCode=400000135&categoryLevel=1")
+    # raw_html = driver.page_source
+    # html = BeautifulSoup(raw_html, 'html.parser')
+    # li_size = len(html.find_all("div", attrs={'class': 'component'}))
+    # print(">>", li_size)
+    # total += li_size
+    # time.sleep(0.1)
+    # driver.get("https://m.gmarket.co.kr/n/superdeal?categoryCode=400000136&categoryLevel=1")
+    # raw_html = driver.page_source
+    # html = BeautifulSoup(raw_html, 'html.parser')
+    # li_size = len(html.find_all("div", attrs={'class': 'component'}))
+    # print(">>", li_size)
+    # total += li_size
+    # time.sleep(0.1)
+    # driver.get("https://m.gmarket.co.kr/n/superdeal?categoryCode=400000137&categoryLevel=1")
+    # raw_html = driver.page_source
+    # html = BeautifulSoup(raw_html, 'html.parser')
+    # li_size = len(html.find_all("div", attrs={'class': 'component'}))
+    # print(">>", li_size)
+    # total += li_size
+    # time.sleep(0.1)
+    # driver.get("https://m.gmarket.co.kr/n/superdeal")
+    url_list = "https://m.gmarket.co.kr/n/superdeal?categoryCode=400000{}&categoryLevel=1"
+    # cateorty_id = [135,136,137,139,140,143,146,148,149,151,152,174]
+    cateorty_id = [174, 136]
+
+    print("-->", timedelta(seconds=timer() - st))
+    # Todo : 각 리스트 별로 함수화해서 분산 처리해야할 듯
+    # Selenium
+    # elements = driver.find_elements_by_xpath('//*[@class="component"]')
+    # print(len(elements))
+
+    import motor.motor_asyncio
+    host = "localhost"
+    port = 27017
+    client = motor.motor_asyncio.AsyncIOMotorClient(host, port)
+
+    async def extract_element(ele):
+        try: #div/div/
+            el_img = ele.find_element_by_xpath('//div[@class="box__itemcard-superdeal--img"]/a/div[@class="box-product"]/span[@class="box-product__img-product"]/img')
+            el_price = ele.find_element_by_xpath('//div[@class="box__itemcard-superdeal--info"]/a/div[@class="box__itemcard--price"]/span/strong')
+            el_url = ele.find_element_by_xpath('//div[@class="box__itemcard-superdeal--img"]/a')
+            # await mongo.insert_doc({
+            #     "title": el_img.get_attribute("alt"),
+            #     "price": el_price.text,
+            #     "img": el_img.screenshot_as_base64,
+            #     "url": el_url.get_property("href")
+            # }, "shop_db", "test")
+            # await print(el_img.get_attribute("alt"))
+            # await print(el_img.screenshot_as_base64)
+            # await print(el_price.text)
+            # await print(el_url.get_property("href"))
+            return {
+                "title": el_img.get_attribute("alt"),
+                "price": el_price.text,
+                # "img": el_img.screenshot_as_base64,
+                "url": el_url.get_property("href")
+            }
+
+        except Exception as e:  # ㅜ
+            print(e)
+
+    async def gather_extract(url):
+        # driver = webdriver.Chrome(executable_path="./chromedriver.exe",
+        #                           options=options)
+        # driver.implicitly_wait(2)
+
+        driver.get(url)
+        elements = driver.find_elements_by_xpath('//*[@class="component"]')
+        print(url, len(elements))
+        if len(elements) != 0:
+            return await asyncio.gather(*[extract_element(el) for el in elements])
+            # print(res)
+            # return [await extract_element(el) for el in elements]
+            # for ele in elements:
+            #     try:
+            #         el_img = ele.find_element_by_xpath(
+            #             'div/div/div[@class="box__itemcard-superdeal--img"]/a/div[@class="box-product"]/span[@class="box-product__img-product"]/img')
+            #         el_price = ele.find_element_by_xpath(
+            #             'div/div/div[@class="box__itemcard-superdeal--info"]/a/div[@class="box__itemcard--price"]/span/strong')
+            #         el_url = ele.find_element_by_xpath('div/div/div[@class="box__itemcard-superdeal--img"]/a')
+            #
+            #         await mongo.insert_doc({
+            #             "title": el_img.get_attribute("alt"),
+            #             "price": el_price.text,
+            #             "img": el_img.screenshot_as_base64,
+            #             "url": el_url.get_property("href")
+            #         }, "shop_db", "test")
+            #     except Exception:
+            #         pass
+
+    async def main(url):
+        res = await asyncio.gather(*[gather_extract(url.format(str(i))) for i in cateorty_id])
+        print(res)
+
+    t = timer()
+    loop = asyncio.get_event_loop()
+    a = loop.run_until_complete(main(url_list))
+    loop.close()
+    print("Async -->", timedelta(seconds=timer() - t))
+    driver.quit()
+
+    return total
+
+
+if __name__ == '__main__':
+    st = timer()
+    pp = pprint.PrettyPrinter(indent=4)
+    num_cores = cpu_count()
+    print("Cores Num : ", num_cores)
+    print("Total :", extract_product())
+    # make_dynamic_xpath()
+    print("실행 시간", timedelta(seconds=timer() - st))
+
+
+"""
+def extract_product():
+    st = timer()
+    total = 0
+    options = Options()
+    options.headless = True
+    driver = webdriver.Chrome(executable_path="./chromedriver.exe",
+                              options=options)
     driver.implicitly_wait(2)
     # driver.get("https://m.gmarket.co.kr")
     # todo : Please Parsing Here.
@@ -169,19 +339,25 @@ def extract_product():
     # print(">>", li_size)
     # total += li_size
     # time.sleep(0.1)
-    driver.get("https://m.gmarket.co.kr/n/superdeal?categoryCode=400000138&categoryLevel=1")
+    driver.get("https://m.gmarket.co.kr/n/superdeal")
     raw_html = driver.page_source
     print("-->", timedelta(seconds=timer() - st))
     # Todo : 각 리스트 별로 함수화해서 분산 처리해야할 듯
     # Selenium
-    component_list = list(map(lambda x: x.text, driver.find_elements_by_xpath('//*[@class="component"]')))
-    price_list = list(map(lambda x: x.text, driver.find_elements_by_xpath('//*[@class="text__price"]')))
-    title_list = list(map(lambda x: x.text, driver.find_elements_by_xpath('//*[@class="text__title"]')))
-    url_list = list(map(lambda x: x.get_attribute('href'), driver.find_elements_by_xpath('//div[@class="box__itemcard-superdeal--inner"]//div[@class="box__itemcard-superdeal--img"]//*[@class="box__itemcard-superdeal--link"]')))
-    d = driver.find_elements_by_xpath('//*[@class="box-product__img-product"]/img')  # 이미지는 a.screenshot("./a.jpg")) 와 같이
-    print(price_list, title_list, url_list, len(price_list), len(title_list), len(component_list), len(url_list))
-    # for i in range(0, len(b)):
-    #     print(list(zip(b[i].text, c[i].text)))
+    import base64
+
+    elements = driver.find_elements_by_xpath('//*[@class="component"]')
+    print(len(elements))
+    for el in elements:
+        el_img = el.find_element_by_xpath('div/div/div[@class="box__itemcard-superdeal--img"]/a/div[@class="box-product"]/span[@class="box-product__img-product"]/img')
+        el_price = el.find_element_by_xpath('div/div/div[@class="box__itemcard-superdeal--info"]/a/div[@class="box__itemcard--price"]/span/strong')
+        el_url = el.find_element_by_xpath('div/div/div[@class="box__itemcard-superdeal--img"]/a')
+
+        print(el_img.get_attribute("alt"))
+        print(el_price.text)
+        print(el_img.screenshot_as_base64)
+        print(el_url.get_property("href"))
+
     print("-->", timedelta(seconds=timer() - st))
 
     # Using BS4
@@ -195,15 +371,44 @@ def extract_product():
     driver.quit()
     # driver.close()
     return total
+    
+    elements = driver.find_elements_by_xpath('//*[@class="component"]')
+    print(len(elements))
+    t1 = timer()
+    for el in elements:
+        el_img = el.find_element_by_xpath('div/div/div[@class="box__itemcard-superdeal--img"]/a/div[@class="box-product"]/span[@class="box-product__img-product"]/img')
+        el_price = el.find_element_by_xpath('div/div/div[@class="box__itemcard-superdeal--info"]/a/div[@class="box__itemcard--price"]/span/strong')
+        el_url = el.find_element_by_xpath('div/div/div[@class="box__itemcard-superdeal--img"]/a')
+        # time.sleep(0.05)
+        # print(el_img.get_attribute("alt"))
+        # print(el_price.text)
+        # print(el_img.screenshot_as_base64)
+        # print(el_url.get_property("href"))
 
+    print("Sync -->", timedelta(seconds=timer() - t1))
 
-if __name__ == '__main__':
-    st = timer()
-    pp = pprint.PrettyPrinter(indent=4)
-    num_cores = cpu_count()
-    print("Cores Num : ", num_cores)
-    print("Total :", extract_product())
-    # make_dynamic_xpath()
-    print("실행 시간", timedelta(seconds=timer() - st))
+    async def extract_element(ele):
+        el_img = ele.find_element_by_xpath(
+            'div/div/div[@class="box__itemcard-superdeal--img"]/a/div[@class="box-product"]/span[@class="box-product__img-product"]/img')
+        el_price = ele.find_element_by_xpath(
+            'div/div/div[@class="box__itemcard-superdeal--info"]/a/div[@class="box__itemcard--price"]/span/strong')
+        el_url = ele.find_element_by_xpath('div/div/div[@class="box__itemcard-superdeal--img"]/a')
+        # await asyncio.sleep(0.05)
+        # print(el_img.get_attribute("alt"))
+        # print(el_price.text)
+        # print(el_img.screenshot_as_base64)
+        # print(el_url.get_property("href"))
 
+    async def main(elements):
+        await asyncio.gather(*[extract_element(el) for el in elements])
+
+    t2 = timer()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main(elements))
+    loop.close()
+    print("Async -->", timedelta(seconds=timer() - t2))
+
+    driver.quit()
+    return total
+    """
 
