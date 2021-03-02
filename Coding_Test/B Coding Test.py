@@ -61,20 +61,6 @@ price : //section[@class="prd-list type-4items"]/ul/li/a[@class="prd-item"]/div[
 # Todo : //div[text() = "일치하는 Text"]     //div[contains(text(), "포함하는 Text")]
 
 
-def convert_image_to_binary():
-    # image to Binary Test
-    import cv2, base64
-    cv = cv2.imread("./test.png")
-    bcv = cv2.imencode('.PNG', cv)[1].tobytes()
-    print(bcv, type(bcv))
-
-    with open('test.png', "rb") as f:
-        print("\n", base64.b64encode(f.read()), type(base64.b64encode(f.read())))
-
-    with open('test.png', "rb") as f:
-        print("\n", bytearray(f.read())[0], type(bytearray(f.read())[0]))
-
-
 def make_dynamic_xpath():
     """
     :param: URL, Title, Price, Img
