@@ -43,8 +43,6 @@ class Gsshop():
                 if i != 1:
                     driver.get(url+"#0_popular_{}".format(str(i)))
                     driver.refresh()
-                    # next_page = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "//*[@id='pageNavigation']/*[@class='paging']/a[7]")))
-                    # next_page.click()
                 elements = WebDriverWait(driver, 5).until(EC.presence_of_all_elements_located((By.XPATH, '//*[@class="prd-list type-4items"]/ul/li')))
                 # print(url, len(elements))
                 res = await asyncio.gather(*[self.extract_data(i) for i in elements])
