@@ -12,7 +12,6 @@ if __name__ == '__main__':
     pp = pprint.PrettyPrinter(indent=4)
     num_cores = cpu_count()
     print("Cores Num : ", num_cores)
-    # Todo : Class Object 선언
     gmarket = Gmarket()
     gsshop = Gsshop()
     loop = asyncio.get_event_loop()
